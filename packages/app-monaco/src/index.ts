@@ -11,7 +11,11 @@ import { MonacoEditor } from "./MonacoEditor";
 
 export type { NetlessAppMonacoAttributes } from "./typings";
 
-const NetlessAppMonaco: NetlessApp<NetlessAppMonacoAttributes> = {
+export type NetlessAppMonacoAppOptions = {
+  loader?: Parameters<typeof monacoLoader.config>[0];
+};
+
+const NetlessAppMonaco: NetlessApp<NetlessAppMonacoAttributes, void, NetlessAppMonacoAppOptions> = {
   kind,
   async setup(context) {
     const box = context.getBox();
@@ -26,6 +30,14 @@ const NetlessAppMonaco: NetlessApp<NetlessAppMonacoAttributes> = {
     });
 
     box.mountStyles(styles + editorStyles);
+
+    const appOptions = context.getAppOptions();
+
+    if (appOptions) {
+      if (appOptions.loader) {
+        monacoLoader.config(appOptions.loader);
+      }
+    }
 
     const monaco = await monacoLoader.init();
 
